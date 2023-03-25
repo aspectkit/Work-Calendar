@@ -6,7 +6,7 @@ This website allows the user to plan out their work day by inputting events into
 
 ## Installation
 
-Link: 
+Link: https://kitdhing.github.io/Work-Calendar/
 
 ## Usage
 
@@ -22,6 +22,6 @@ Please refer to the license in the repo
 
 ## Build Settings 
 
-Link:
+Link: https://kitdhing.github.io/Work-Calendar/
 
 ![image](/Assets/Images/work-scheduler.png)
