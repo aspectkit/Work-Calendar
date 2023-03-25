@@ -1,9 +1,5 @@
-// Wrap all code that interacts with the DOM in a call to jQuery to ensure that
-// the code isn't run until the browser has finished rendering all the elements
-// in the html.
-$(".display-3").css("text-align", "center");
-$(".lead").css("text-align", "center");
 
+// this function removes the tense classes so they can be reassigned in the addColor function
 function deleteColor(obj){
     if ($(obj).hasClass("past")){
         $(obj).removeClass("past");
@@ -18,47 +14,50 @@ function deleteColor(obj){
     }
 }
 
+// this function compares the current time to the time block time to see if its in the past, present, or future and sets the color accordingly
 function addColor(obj) {  
-    var hour = $(obj).data("hour");
-    var currHour = dayjs().format('h');
+    // am = 0 pm = 1
+    var loopHour = $(obj).data("hour");
+    var currHour = dayjs().format('H');
     var am_pm = $(obj).data("am-pm") 
-// curr = 1pm hour = 2pm
-    if (hour == currHour) {
+    
+    if (am_pm == 1){
+        loopHour = loopHour + 12;
+    }
+
+    if (loopHour < currHour) {
+        $(obj).addClass("past");
+    } else if (loopHour == currHour){
         $(obj).addClass("present");
-    } else if (hour < currHour && am_pm == 0){
-        $(obj).addClass("past");
-    } else if (hour > currHour && am_pm == 0) {
-        $(obj).addClass("past");
     } else {
         $(obj).addClass("future");
     }
+
+}
+// this function saves the text in each time block to local storage
+function saveText(){
+    $(".saveBtn").click(function (e) { 
+        e.preventDefault();
+        var parentDiv = $(this).parent()
+
+        var loopHour = parentDiv.data("hour")
+
+        var textToSave = parentDiv.children(".description").val();
+
+        localStorage.setItem(loopHour, textToSave);
+        
+    });
 }
 
-$(function () {
-    // TODO: Add a listener for click events on the save button. This code should
-    // use the id in the containing time-block as a key to save the user input in
-    // local storage. HINT: What does `this` reference in the click listener
-    // function? How can DOM traversal be used to get the "hour-x" id of the
-    // time-block containing the button that was clicked? How might the id be
-    // useful when saving the description in local storage?
-    //
-    // TODO: Add code to apply the past, present, or future class to each time
-    // block by comparing the id to the current hour. HINTS: How can the id
-    // attribute of each time-block be used to conditionally add or remove the
-    // past, present, and future classes? How can Day.js be used to get the
-    // current hour in 24-hour time?
-    $('.time-block').each(function(i, obj) {
-        deleteColor(obj);
-        addColor(obj);
-    });
+// this function gets the hour data of the time block and uses it as the key to store the text data in local storage
+function getText(obj){
+    var loopHour = $(obj).data("hour")
+    var textToGet = localStorage.getItem(loopHour);
+    $(obj).children(".description").val(textToGet);
+}
 
-
-    //
-    // TODO: Add code to get any user input that was saved in localStorage and set
-    // the values of the corresponding textarea elements. HINT: How can the id
-    // attribute of each time-block be used to do this?
-    //
-    // TODO: Add code to display the current date in the header of the page.
+// adds the current date to the top of the page
+function setTime(){
     var currDate = $("#currentDay");
     var numDay = dayjs().format('D');
     var ending = "";
@@ -77,6 +76,31 @@ $(function () {
 
     }
     currDate.text(dayjs().format('dddd[,] MMMM D') + ending);
+}
+
+$(function () {
+    // centers the header and subheader text as well as the current date
+    $(".display-3").css("text-align", "center");
+    $(".lead").css("text-align", "center");
+
+    // calls the saveText function to store the text of the time block to local storage
+    saveText();
+    
+    // calls the functions to add the tense color according to the current time for each time block
+    $('.time-block').each(function(i, obj) {
+        deleteColor(obj);
+        addColor(obj);
+    });
+
+
+    // calls the getText function for every time block in the calendar
+    $('.time-block').each(function(i, obj){
+        getText(obj);
+    });
+
+    // calls the setTime function to put the current date at the top of the page
+    setTime();
 });
 
-//   1st 2nd 3rd 4th 5th 6th 7th 8th 9th 10th 11th 12th 20th 21st 22nd 23rd 24th
+
+
